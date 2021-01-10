@@ -121,6 +121,9 @@
      </layout>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+    </item>
+    <item>
      <widget class="QPushButton" name="button_start">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

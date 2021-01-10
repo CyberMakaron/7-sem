@@ -66,7 +66,9 @@ void MainWindow::copySolution(Member &dest, Member &src){
 }
 
 void MainWindow::mainAlgorithm(){
-    ///пока не будет 0 конфликтов
+    QVector<float> temp1 = temp;
+    QVector<uint> bad_count1 = bad_count, best_energy1 = best_energy;
+
     temp.clear();
     bad_count.clear();
     best_energy.clear();
@@ -74,13 +76,14 @@ void MainWindow::mainAlgorithm(){
     bool sol = false;
     srand(QTime::currentTime().msec());
     Member current(N), working(N), best(N);
-    best.energy = INT32_MAX;
+    //best.energy = INT32_MAX;
     initializeSolution(current);
     computeEnergy(current);
     copySolution(working, current);
+    copySolution(best, current);
     while (T > Tmin){
         temp << T;
-        bad_count << 0;
+        //bad_count << 0;
         int accepted = 0;
         for (int step = 0; step < steps; step++){
             bool useNew = false;
@@ -91,7 +94,8 @@ void MainWindow::mainAlgorithm(){
             else{
                 float test = (rand()%1000) / 1000.0;
                 float calc = exp(-(working.energy - current.energy) / T);
-                if (calc < test){
+                ///if (calc < test){
+                if (calc > test){
                     accepted++;
                     useNew = true;
                 }
@@ -105,15 +109,18 @@ void MainWindow::mainAlgorithm(){
                 }
             }
             else{
-                bad_count.last()++;
+                //bad_count.last()++;
                 copySolution(working, current);
             }
         }
+        bad_count << accepted;
         best_energy << best.energy;
         T *= alpha;
     }
-    if (!sol)
-        QMessageBox::information(nullptr, "Нежданчик", "Решение не найдено!");
+    if (!sol){
+        QMessageBox::information(nullptr, "Нежданчик", "Более хорошего решения не найдено!");
+        temp = temp1; bad_count = bad_count1; best_energy = best_energy1;
+    }
     else{
         if (best_sol != nullptr) delete best_sol;
         best_sol = new Member(N);
